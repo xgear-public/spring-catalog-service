@@ -1,3 +1,4 @@
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
@@ -23,8 +24,19 @@ repositories {
 extra["springCloudVersion"] = "2023.0.2"
 
 tasks.withType<BootRun> {
-    systemProperty ("spring.profiles.active", "testdata")
-//    systemProperty ("spring.profiles.active", "prod")
+    systemProperty("spring.profiles.active", "testdata")
+}
+
+tasks.withType<BootBuildImage> {
+    imageName = project.name
+    environment.put("BP_JVM_VERSION", "17.*")
+    docker {
+        publishRegistry {
+            username = "${project.findProperty("registryUsername")}"
+            password = "${project.findProperty("registryToken")}"
+            url = "${project.findProperty("registryUrl")}"
+        }
+    }
 }
 
 configurations {
@@ -46,6 +58,11 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-config")
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+
+    implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
+    runtimeOnly("org.postgresql:postgresql")
+
+//    implementation("org.flywaydb:flyway-core")
 
 }
 

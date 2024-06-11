@@ -1,11 +1,12 @@
 package com.polarbookshop.catalogservice.domain
 
 import org.springframework.stereotype.Service
+import java.time.Instant
 
 @Service
-open class BookService(val bookRepository: BookRepository) {
+class BookService(val bookRepository: BookRepository) {
 
-    fun viewBookList() = bookRepository.findAll()
+    fun viewBookList(): Iterable<Book> = bookRepository.findAll()
 
     fun viewBookDetails(isbn: String) = bookRepository.findByISBN(isbn) ?: throw BookNotFoundException(isbn)
 
@@ -13,7 +14,7 @@ open class BookService(val bookRepository: BookRepository) {
         bookRepository.findByISBN(book.isbn)?.let {
             throw BookAlreadyExistsException(book.isbn)
         }
-        return bookRepository.save(book)
+        return bookRepository.save(book.copy(createdDate = Instant.now(), lastModifiedDate = Instant.now()))
     }
 
     fun removeBookFromCatalog(isbn: String) = bookRepository.deleteByISBN(isbn)
@@ -21,7 +22,16 @@ open class BookService(val bookRepository: BookRepository) {
     fun editBookDetails(isbn: String, book: Book): Book {
         return bookRepository.findByISBN(isbn)?.let { existingBook ->
             bookRepository.save(
-                Book(existingBook.isbn, book.title, book.author, book.price)
+                Book(
+                    id = existingBook.id,
+                    isbn = existingBook.isbn,
+                    title = book.title,
+                    author = book.author,
+                    price = book.price,
+                    createdDate = existingBook.createdDate,
+                    lastModifiedDate = existingBook.lastModifiedDate,
+                    version = existingBook.version
+                )
             )
         } ?: addBookToCatalog(book)
     }
