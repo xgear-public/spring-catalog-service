@@ -10,7 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.annotation.Version
 import java.time.Instant
 
-data class Book(
+data class Book @JvmOverloads constructor(
 
     @Id
     val id: Long? = null,
@@ -39,4 +39,4 @@ data class Book(
     @Version
     val version: Int = 0,
 
-)
+    )

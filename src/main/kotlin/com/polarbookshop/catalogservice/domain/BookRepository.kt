@@ -5,11 +5,11 @@ import org.springframework.data.jdbc.repository.query.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.transaction.annotation.Transactional
 
-interface BookRepository: CrudRepository<Book, Long> {
-    @Query("select b from Book b where b.isbn = :isbn")
-    fun findByISBN(isbn: String): Book?
+interface BookRepository : CrudRepository<Book, Long> {
 
-//    fun existsByISBN(isbn: String): Boolean
+    fun findByIsbn(isbn: String): Book?
+
+    fun existsByIsbn(isbn: String): Boolean
 
     @Modifying
     @Transactional

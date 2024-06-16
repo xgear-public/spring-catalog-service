@@ -8,10 +8,10 @@ class BookService(val bookRepository: BookRepository) {
 
     fun viewBookList(): Iterable<Book> = bookRepository.findAll()
 
-    fun viewBookDetails(isbn: String) = bookRepository.findByISBN(isbn) ?: throw BookNotFoundException(isbn)
+    fun viewBookDetails(isbn: String) = bookRepository.findByIsbn(isbn) ?: throw BookNotFoundException(isbn)
 
     fun addBookToCatalog(book: Book): Book {
-        bookRepository.findByISBN(book.isbn)?.let {
+        bookRepository.findByIsbn(book.isbn)?.let {
             throw BookAlreadyExistsException(book.isbn)
         }
         return bookRepository.save(book.copy(createdDate = Instant.now(), lastModifiedDate = Instant.now()))
@@ -20,7 +20,7 @@ class BookService(val bookRepository: BookRepository) {
     fun removeBookFromCatalog(isbn: String) = bookRepository.deleteByISBN(isbn)
 
     fun editBookDetails(isbn: String, book: Book): Book {
-        return bookRepository.findByISBN(isbn)?.let { existingBook ->
+        return bookRepository.findByIsbn(isbn)?.let { existingBook ->
             bookRepository.save(
                 Book(
                     id = existingBook.id,
